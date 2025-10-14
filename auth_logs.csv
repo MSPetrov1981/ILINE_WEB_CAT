@@ -1,0 +1,19 @@
+timestamp,username,action,ip_address,user_agent,session_duration
+2025-10-14 13:30:41,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 13:31:53,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 13:34:24,admin2,REGISTER,,,
+2025-10-14 13:34:36,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 13:34:56,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 13:35:19,maxim,REGISTER,,,
+2025-10-14 13:35:30,maxim,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 14:01:51,maxim,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 14:01:59,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 14:03:08,admin,UPDATE_EMPLOYEE,,,Updated employee: 50002
+2025-10-14 14:06:30,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 14:10:31,maxim1,REGISTER,,,
+2025-10-14 14:10:42,maxim1,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 14:12:15,maxim1,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 14:13:12,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 15:22:26,admin,ADD_EMPLOYEE,,,Added employee: Петракова Анна Сергеевна
+2025-10-14 15:23:22,admin,DELETE_EMPLOYEE,,,Deleted employee: Петракова Анна Сергеевна
+2025-10-14 15:26:55,admin,UPDATE_EMPLOYEE,,,Updated employee: 20

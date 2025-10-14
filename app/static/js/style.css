@@ -4,6 +4,8 @@
     box-sizing: border-box;
 }
 
+
+
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
@@ -11,10 +13,29 @@ body {
     background-color: #f4f4f4;
 }
 
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);   
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+
+.btn-group .btn {
+    margin-right: 5px;
+}
+
+
+.btn-group .btn:last-child {
+    margin-right: 0;
 }
 
 h1 {
@@ -78,6 +99,12 @@ h1 {
     padding: 5px 10px;
     font-size: 12px;
 }
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
 
 .table-container {
     background: white;

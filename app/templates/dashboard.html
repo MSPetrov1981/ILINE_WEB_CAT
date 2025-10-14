@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Главная панель</h1>
+        <p class="lead">Добро пожаловать, {{ user.username }}!</p>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Быстрые действия
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.employees') }}" class="btn btn-primary">Управление сотрудниками</a>
+                    <a href="{{ url_for('main.user_logs') }}" class="btn btn-outline-secondary">Просмотр моих логов</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Информация о системе
+            </div>
+            <div class="card-body">
+                <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Участник с:</strong> {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
