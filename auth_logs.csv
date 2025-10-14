@@ -17,3 +17,9 @@ timestamp,username,action,ip_address,user_agent,session_duration
 2025-10-14 15:22:26,admin,ADD_EMPLOYEE,,,Added employee: Петракова Анна Сергеевна
 2025-10-14 15:23:22,admin,DELETE_EMPLOYEE,,,Deleted employee: Петракова Анна Сергеевна
 2025-10-14 15:26:55,admin,UPDATE_EMPLOYEE,,,Updated employee: 20
+2025-10-14 16:00:59,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 16:01:11,adminеее,FAILED_LOGIN,127.0.0.1,,
+2025-10-14 16:02:03,maxim2,REGISTER,,,
+2025-10-14 16:02:21,maxim2,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 16:03:31,maxim2,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 16:03:35,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",

@@ -135,11 +135,28 @@ def employees():
     sort_by = request.args.get('sort_by', 'id')
     sort_order = request.args.get('sort_order', 'asc')
     
+    # Получаем параметры фильтрации по зарплате
+    min_salary = request.args.get('min_salary', type=int)
+    max_salary = request.args.get('max_salary', type=int)
+    
+    # Валидация: минимальная зарплата не может быть больше максимальной
+    if min_salary and max_salary and min_salary > max_salary:
+        flash('Минимальная зарплата не может быть больше максимальной', 'error')
+        min_salary, max_salary = max_salary, min_salary
+    
     try:
         if search_query:
-            pagination = search_service.search_employees(search_query, page, 20)
+            pagination = search_service.search_employees(
+                search_query, page, 20, 
+                min_salary=min_salary, 
+                max_salary=max_salary
+            )
         else:
-            pagination = search_service.get_sorted_employees(sort_by, sort_order, page, 20)
+            pagination = search_service.get_sorted_employees(
+                sort_by, sort_order, page, 20,
+                min_salary=min_salary,
+                max_salary=max_salary
+            )
         
         employees = pagination.items
         return render_template(
@@ -148,7 +165,9 @@ def employees():
             pagination=pagination,
             search_query=search_query,
             sort_by=sort_by,
-            sort_order=sort_order
+            sort_order=sort_order,
+            min_salary=min_salary,
+            max_salary=max_salary
         )
     except Exception as e:
         flash(f'Ошибка загрузки сотрудников: {str(e)}', 'error')

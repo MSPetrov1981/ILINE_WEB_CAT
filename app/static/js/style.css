@@ -28,6 +28,41 @@ body {
     font-weight: bold;
 }
 
+/* Стили для фильтров */
+.form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Быстрые фильтры */
+.badge {
+    margin-right: 0.3rem;
+    padding: 0.4rem 0.6rem;
+}
+
+.badge:hover {
+    background-color: #007bff !important;
+    color: white !important;
+}
+
+/* Валидация */
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .col-md-2 .d-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .badge {
+        display: inline-block;
+        margin-bottom: 0.3rem;
+    }
+}
 
 .btn-group .btn {
     margin-right: 5px;
