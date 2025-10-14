@@ -41,3 +41,9 @@ timestamp,username,action,ip_address,user_agent,session_duration
 2025-10-14 18:27:10,admin,UPDATE_EMPLOYEE,,,Updated employee: 49985
 2025-10-14 18:27:44,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
 2025-10-14 19:19:13,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 19:49:29,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 19:49:31,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 19:53:25,admin,UPDATE_EMPLOYEE,,,Updated employee: 9
+2025-10-14 19:54:41,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 19:54:56,maxim2,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 19:55:45,maxim2,UPDATE_EMPLOYEE,,,Updated employee: 81
