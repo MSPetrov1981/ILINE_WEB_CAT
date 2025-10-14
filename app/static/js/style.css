@@ -4,6 +4,8 @@
     box-sizing: border-box;
 }
 
+
+
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
@@ -11,10 +13,282 @@ body {
     background-color: #f4f4f4;
 }
 
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);   
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Стили для фильтров */
+.form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Быстрые фильтры */
+.badge {
+    margin-right: 0.3rem;
+    padding: 0.4rem 0.6rem;
+}
+
+.badge:hover {
+    background-color: #007bff !important;
+    color: white !important;
+}
+
+/* Валидация */
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Дополнительные стили для улучшенного UX */
+.active-filter {
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.combined-filter-indicator {
+    border-left: 4px solid #28a745;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Стили для активных фильтров с анимацией */
+.quick-filters .badge {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-filters .badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Стили для выпадающего списка должностей */
+.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Подсветка выбранной опции */
+.form-select option:checked {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Стили для поля ввода новой должности */
+#customPositionField {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Индикатор текущей должности */
+.current-position {
+    background-color: #e9ecef;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+* Анимации для поля ввода новой должности */
+#customPositionField {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Стили для индикатора загрузки */
+.btn:disabled {
+    cursor: not-allowed;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Стили для сообщений об ошибках */
+.text-danger small {
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/* Подсветка текущей должности */
+.text-primary {
+    font-weight: 500;
+}
+
+/* Улучшения для выпадающего списка */
+.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .col-md-8 {
+        padding: 0 10px;
+    }
+}
+
+
+
+
+/* Индикатор загрузки */
+.loading-indicator {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+/* Адаптивные улучшения */
+@media (max-width: 768px) {
+    .quick-filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .quick-filters .badge {
+        margin-bottom: 5px;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .col-md-2 .d-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .badge {
+        display: inline-block;
+        margin-bottom: 0.3rem;
+    }
+
+/* Адаптивность для фильтров */
+@media (max-width: 992px) {
+    .col-md-2, .col-md-3 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .col-md-1 .d-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .badge {
+        display: inline-block;
+        margin-bottom: 0.3rem;
+        font-size: 0.75rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+
+/* Стили для быстрых фильтров */
+.quick-filters {
+    margin-bottom: 1rem;
+}
+
+.quick-filters .badge {
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    padding: 0.5rem 0.7rem;
+    transition: all 0.2s ease;
+    border: 1px solid #dee2e6;
+}
+
+.quick-filters .badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.quick-filters .badge.bg-light:hover {
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #007bff;
+}
+
+.quick-filters .badge.bg-primary {
+    border-color: #007bff;
+}
+
+/* Разделитель между группами фильтров */
+.quick-filters small.text-muted {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+/* Адаптивность для быстрых фильтров */
+@media (max-width: 768px) {
+    .quick-filters .badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .quick-filters small.text-muted {
+        font-size: 0.8rem;
+    }
+}
+
+/* Стили для активных фильтров */
+.filter-group {
+    margin-bottom: 0.5rem;
+}
+
+.filter-group:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+
+
+}
+
+.btn-group .btn {
+    margin-right: 5px;
+}
+
+/* Стили для дат в таблице */
+.employees-table td:nth-child(4) {
+    white-space: nowrap;
+}
+
+/* Подсветка активных фильтров */
+.alert-info {
+    border-left: 4px solid #17a2b8;
+}
+.btn-group .btn:last-child {
+    margin-right: 0;
 }
 
 h1 {
@@ -78,6 +352,12 @@ h1 {
     padding: 5px 10px;
     font-size: 12px;
 }
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
 
 .table-container {
     background: white;

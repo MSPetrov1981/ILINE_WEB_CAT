@@ -1,13 +1,26 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Систему управления персоналом</title>
-</head>
-<body>
-    <h1>Добро пожаловать в систему </h1>
-   
-    <a href="/employees">View Employees</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Система управления персоналом</h1>
+                <p class="card-text">Добро пожаловать в систему управления персоналом</p>
+                
+                {% if not current_user.is_authenticated %}
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg">Войти</a>
+                    <a href="{{ url_for('main.register') }}" class="btn btn-outline-secondary">Зарегистрироваться</a>
+                </div>
+                {% else %}
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">Перейти на главную</a>
+                    <a href="{{ url_for('main.employees') }}" class="btn btn-outline-primary">Просмотр сотрудников</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
