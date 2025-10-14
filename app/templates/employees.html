@@ -13,45 +13,101 @@
 <form method="GET" class="mb-4">
     <div class="row g-3">
         <!-- Поиск по имени/должности -->
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label for="search" class="form-label">Поиск</label>
             <input type="text" name="search" class="form-control" placeholder="Поиск по имени или должности..." 
                    value="{{ search_query }}" id="search">
         </div>
         
         <!-- Фильтр по минимальной зарплате -->
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label for="min_salary" class="form-label">Мин. зарплата</label>
             <input type="number" name="min_salary" class="form-control" placeholder="0" 
                    value="{{ min_salary if min_salary is not none }}" id="min_salary" min="0">
         </div>
         
         <!-- Фильтр по максимальной зарплате -->
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label for="max_salary" class="form-label">Макс. зарплата</label>
             <input type="number" name="max_salary" class="form-control" placeholder="1000000" 
                    value="{{ max_salary if max_salary is not none }}" id="max_salary" min="0">
         </div>
         
+        <!-- Фильтр по дате приема (начальная) -->
+        <div class="col-md-2">
+            <label for="start_date" class="form-label">Дата приема с</label>
+            <input type="date" name="start_date" class="form-control" 
+                   value="{{ start_date }}" id="start_date">
+        </div>
+        
+        <!-- Фильтр по дате приема (конечная) -->
+        <div class="col-md-2">
+            <label for="end_date" class="form-label">Дата приема по</label>
+            <input type="date" name="end_date" class="form-control" 
+                   value="{{ end_date }}" id="end_date">
+        </div>
+        
         <!-- Кнопки -->
-        <div class="col-md-2 d-flex align-items-end">
+        <div class="col-md-1 d-flex align-items-end">
             <div class="d-grid gap-2 w-100">
                 <button type="submit" class="btn btn-primary">Применить</button>
-                {% if search_query or min_salary is not none or max_salary is not none %}
-                    <a href="{{ url_for('main.employees') }}" class="btn btn-outline-secondary">Сбросить</a>
+                {% if search_query or min_salary is not none or max_salary is not none or start_date or end_date %}
+                    <a href="{{ url_for('main.employees') }}" class="btn btn-outline-secondary" id="reset-filters-btn">Сбросить</a>
                 {% endif %}
             </div>
         </div>
     </div>
 </form>
+<!-- Быстрые фильтры -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex flex-wrap align-items-center mb-2">
+            <small class="text-muted me-2">Быстрые фильтры по зарплате:</small>
+            <div class="quick-filters">
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-filter" 
+                   data-min-salary="0" data-max-salary="50000">до 50к</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-filter" 
+                   data-min-salary="50000" data-max-salary="100000">50-100к</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-filter" 
+                   data-min-salary="100000" data-max-salary="200000">100-200к</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-filter" 
+                   data-min-salary="200000" data-max-salary="">от 200к</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-filter" 
+                   data-min-salary="" data-max-salary="50000">низкая з/п</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-filter" 
+                   data-min-salary="300000" data-max-salary="">высокая з/п</a>
+            </div>
+        </div>
+        
+        <div class="d-flex flex-wrap align-items-center">
+            <small class="text-muted me-2">Быстрые фильтры по датам:</small>
+            <div class="quick-filters">
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-date-filter" 
+                   data-date-range="this_year">В этом году</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-date-filter" 
+                   data-date-range="last_year">За последний год</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-date-filter" 
+                   data-date-range="last_3_months">Последние 3 месяца</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-date-filter" 
+                   data-date-range="last_month">Последний месяц</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-date-filter" 
+                   data-date-range="this_month">В этом месяце</a>
+                <a href="javascript:void(0)" class="badge bg-light text-dark text-decoration-none quick-date-filter" 
+                   data-date-range="last_5_years">За 5 лет</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Информация о примененных фильтрах -->
-{% if min_salary is not none or max_salary is not none %}
+{% if min_salary is not none or max_salary is not none or start_date or end_date %}
 <div class="alert alert-info mb-3">
     <strong>Примененные фильтры:</strong>
     {% if min_salary is not none %} Мин. зарплата: {{ "{:,.0f}".format(min_salary) }} руб.{% endif %}
     {% if max_salary is not none %} Макс. зарплата: {{ "{:,.0f}".format(max_salary) }} руб.{% endif %}
-    <a href="{{ url_for('main.employees') }}" class="float-end">× Очистить все</a>
+    {% if start_date %} Дата приема с: {{ start_date }}{% endif %}
+    {% if end_date %} Дата приема по: {{ end_date }}{% endif %}
+    <a href="{{ url_for('main.employees') }}" class="float-end text-decoration-none">× Очистить все</a>
 </div>
 {% endif %}
 
@@ -61,27 +117,27 @@
         <thead>
             <tr>
                 <th>
-                    <a href="?sort_by=id&sort_order={{ 'desc' if sort_by == 'id' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}">
+                    <a href="?sort_by=id&sort_order={{ 'desc' if sort_by == 'id' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">
                         ID {% if sort_by == 'id' %}{{ '↑' if sort_order == 'asc' else '↓' }}{% endif %}
                     </a>
                 </th>
                 <th>
-                    <a href="?sort_by=full_name&sort_order={{ 'desc' if sort_by == 'full_name' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}">
+                    <a href="?sort_by=full_name&sort_order={{ 'desc' if sort_by == 'full_name' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">
                         ФИО {% if sort_by == 'full_name' %}{{ '↑' if sort_order == 'asc' else '↓' }}{% endif %}
                     </a>
                 </th>
                 <th>
-                    <a href="?sort_by=position&sort_order={{ 'desc' if sort_by == 'position' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}">
+                    <a href="?sort_by=position&sort_order={{ 'desc' if sort_by == 'position' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">
                         Должность {% if sort_by == 'position' %}{{ '↑' if sort_order == 'asc' else '↓' }}{% endif %}
                     </a>
                 </th>
                 <th>
-                    <a href="?sort_by=hire_date&sort_order={{ 'desc' if sort_by == 'hire_date' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}">
+                    <a href="?sort_by=hire_date&sort_order={{ 'desc' if sort_by == 'hire_date' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">
                         Дата приема {% if sort_by == 'hire_date' %}{{ '↑' if sort_order == 'asc' else '↓' }}{% endif %}
                     </a>
                 </th>
                 <th>
-                    <a href="?sort_by=salary&sort_order={{ 'desc' if sort_by == 'salary' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}">
+                    <a href="?sort_by=salary&sort_order={{ 'desc' if sort_by == 'salary' and sort_order == 'asc' else 'asc' }}{% if search_query %}&search={{ search_query }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">
                         Зарплата {% if sort_by == 'salary' %}{{ '↑' if sort_order == 'asc' else '↓' }}{% endif %}
                     </a>
                 </th>
@@ -95,7 +151,7 @@
                 <td>{{ employee.id }}</td>
                 <td>{{ employee.full_name }}</td>
                 <td>{{ employee.position }}</td>
-                <td>{{ employee.hire_date }}</td>
+                <td>{{ employee.hire_date.strftime('%d.%m.%Y') }}</td>
                 <td>{{ "{:,.0f}".format(employee.salary) }} руб.</td>
                 <td>{{ employee.boss.full_name if employee.boss else '-' }}</td>
                 <td>
@@ -112,7 +168,7 @@
             {% else %}
             <tr>
                 <td colspan="7" class="text-center">
-                    {% if search_query or min_salary is not none or max_salary is not none %}
+                    {% if search_query or min_salary is not none or max_salary is not none or start_date or end_date %}
                         Сотрудники не найдены по заданным критериям
                     {% else %}
                         Сотрудники не найдены
@@ -132,7 +188,7 @@
             {% if page_num %}
                 <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
                     <a class="page-link" 
-                       href="?page={{ page_num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}{% if sort_order %}&sort_order={{ sort_order }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}">
+                       href="?page={{ page_num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}{% if sort_order %}&sort_order={{ sort_order }}{% endif %}{% if min_salary is not none %}&min_salary={{ min_salary }}{% endif %}{% if max_salary is not none %}&max_salary={{ max_salary }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">
                         {{ page_num }}
                     </a>
                 </li>
@@ -147,8 +203,8 @@
 <!-- Статистика -->
 <div class="mt-3 text-muted">
     Показано {{ employees|length }} из {{ pagination.total }} сотрудников
-    {% if min_salary is not none or max_salary is not none %}
-        (отфильтровано по зарплате)
+    {% if min_salary is not none or max_salary is not none or start_date or end_date %}
+        (отфильтровано)
     {% endif %}
 </div>
 {% endblock %}
@@ -156,9 +212,228 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Текущие значения фильтров
+    let currentFilters = {
+        minSalary: '{{ min_salary if min_salary is not none else "null" }}',
+        maxSalary: '{{ max_salary if max_salary is not none else "null" }}',
+        startDate: '{{ start_date if start_date else "" }}',
+        endDate: '{{ end_date if end_date else "" }}',
+        search: '{{ search_query if search_query else "" }}',
+           sortBy: '{{ sort_by if sort_by else "id" }}',
+    sortOrder: '{{ sort_order if sort_order else "asc" }}'
+    };
+
+    // Флаг для отслеживания первой загрузки
+    let isInitialLoad = true;
+
+    // Функция для обновления URL с текущими фильтрами
+    function updateUrl() {
+        const params = new URLSearchParams();
+        
+        // Добавляем поисковый запрос
+        if (currentFilters.search) {
+            params.set('search', currentFilters.search);
+        }
+        
+        // Добавляем фильтры по зарплате
+        if (currentFilters.minSalary !== null && currentFilters.minSalary !== '') {
+            params.set('min_salary', currentFilters.minSalary);
+        }
+        if (currentFilters.maxSalary !== null && currentFilters.maxSalary !== '') {
+            params.set('max_salary', currentFilters.maxSalary);
+        }
+        
+        // Добавляем фильтры по дате
+        if (currentFilters.startDate) {
+            params.set('start_date', currentFilters.startDate);
+        }
+        if (currentFilters.endDate) {
+            params.set('end_date', currentFilters.endDate);
+        }
+        
+        // Добавляем сортировку
+        if (currentFilters.sortBy && currentFilters.sortBy !== 'id') {
+            params.set('sort_by', currentFilters.sortBy);
+        }
+        if (currentFilters.sortOrder && currentFilters.sortOrder !== 'asc') {
+            params.set('sort_order', currentFilters.sortOrder);
+        }
+
+        // Добавляем страницу только если это не первая загрузка
+        if (!isInitialLoad) {
+            params.set('page', '1'); // Сбрасываем на первую страницу при изменении фильтров
+        }
+        
+        // Обновляем URL без перезагрузки страницы (для истории)
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        
+        if (isInitialLoad) {
+            isInitialLoad = false;
+        } else {
+            window.history.replaceState({}, '', newUrl);
+            // Перезагружаем страницу с новыми параметрами
+            window.location.href = newUrl;
+        }
+    }
+
+    // Функция для вычисления дат
+    function getDateRange(rangeType) {
+        const today = new Date();
+        const result = { startDate: '', endDate: '' };
+        
+        switch(rangeType) {
+            case 'this_year':
+                result.startDate = `${today.getFullYear()}-01-01`;
+                result.endDate = today.toISOString().split('T')[0];
+                break;
+            case 'last_year':
+                const lastYear = new Date(today);
+                lastYear.setFullYear(today.getFullYear() - 1);
+                result.startDate = lastYear.toISOString().split('T')[0];
+                result.endDate = today.toISOString().split('T')[0];
+                break;
+            case 'last_3_months':
+                const threeMonthsAgo = new Date(today);
+                threeMonthsAgo.setMonth(today.getMonth() - 3);
+                result.startDate = threeMonthsAgo.toISOString().split('T')[0];
+                result.endDate = today.toISOString().split('T')[0];
+                break;
+            case 'last_month':
+                const lastMonth = new Date(today);
+                lastMonth.setMonth(today.getMonth() - 1);
+                result.startDate = lastMonth.toISOString().split('T')[0];
+                result.endDate = today.toISOString().split('T')[0];
+                break;
+            case 'this_month':
+                result.startDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+                result.endDate = today.toISOString().split('T')[0];
+                break;
+            case 'last_5_years':
+                const fiveYearsAgo = new Date(today);
+                fiveYearsAgo.setFullYear(today.getFullYear() - 5);
+                result.startDate = fiveYearsAgo.toISOString().split('T')[0];
+                result.endDate = today.toISOString().split('T')[0];
+                break;
+        }
+        
+        return result;
+    }
+
+    // Обработчики для быстрых фильтров по зарплате
+    document.querySelectorAll('.quick-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            const minSalary = this.getAttribute('data-min-salary');
+            const maxSalary = this.getAttribute('data-max-salary');
+            
+            // Проверяем, не является ли этот фильтр уже активным
+            const currentMin = currentFilters.minSalary !== null ? currentFilters.minSalary.toString() : '';
+            const currentMax = currentFilters.maxSalary !== null ? currentFilters.maxSalary.toString() : '';
+            
+            if (minSalary === currentMin && maxSalary === currentMax) {
+                // Сброс фильтра по зарплате
+                currentFilters.minSalary = null;
+                currentFilters.maxSalary = null;
+            } else {
+                // Установка нового фильтра по зарплате
+                currentFilters.minSalary = minSalary === '' ? null : parseInt(minSalary);
+                currentFilters.maxSalary = maxSalary === '' ? null : parseInt(maxSalary);
+            }
+            
+            updateUrl();
+        });
+    });
+
+    // Обработчики для быстрых фильтров по датам
+    document.querySelectorAll('.quick-date-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            const dateRange = getDateRange(this.getAttribute('data-date-range'));
+            
+            // Проверяем, не является ли этот фильтр уже активным
+            const currentStart = currentFilters.startDate;
+            const currentEnd = currentFilters.endDate;
+            
+            if (currentStart === dateRange.startDate && currentEnd === dateRange.endDate) {
+                // Сброс фильтра по дате
+                currentFilters.startDate = '';
+                currentFilters.endDate = '';
+            } else {
+                // Обновляем фильтры по дате (сохраняя существующие фильтры по зарплате)
+                currentFilters.startDate = dateRange.startDate;
+                currentFilters.endDate = dateRange.endDate;
+            }
+            
+            updateUrl();
+        });
+    });
+
+    // Подсветка активных быстрых фильтров
+    function highlightActiveFilters() {
+        // Сброс подсветки
+        document.querySelectorAll('.quick-filter, .quick-date-filter').forEach(filter => {
+            filter.classList.remove('bg-primary', 'text-white', 'active-filter');
+            filter.classList.add('bg-light', 'text-dark');
+        });
+        
+        // Подсветка фильтров по зарплате
+        document.querySelectorAll('.quick-filter').forEach(filter => {
+            const minSalary = filter.getAttribute('data-min-salary');
+            const maxSalary = filter.getAttribute('data-max-salary');
+            
+            const currentMin = currentFilters.minSalary !== null ? currentFilters.minSalary.toString() : '';
+            const currentMax = currentFilters.maxSalary !== null ? currentFilters.maxSalary.toString() : '';
+            
+            if (minSalary === currentMin && maxSalary === currentMax) {
+                filter.classList.remove('bg-light', 'text-dark');
+                filter.classList.add('bg-primary', 'text-white', 'active-filter');
+            }
+        });
+        
+        // Подсветка фильтров по датам
+        document.querySelectorAll('.quick-date-filter').forEach(filter => {
+            const rangeType = filter.getAttribute('data-date-range');
+            const expectedDates = getDateRange(rangeType);
+            
+            if (currentFilters.startDate === expectedDates.startDate && currentFilters.endDate === expectedDates.endDate) {
+                filter.classList.remove('bg-light', 'text-dark');
+                filter.classList.add('bg-primary', 'text-white', 'active-filter');
+            }
+        });
+
+        // Обновляем поля ввода формы
+        updateFormInputs();
+    }
+
+    // Функция для обновления полей ввода формы
+    function updateFormInputs() {
+        const minSalaryInput = document.getElementById('min_salary');
+        const maxSalaryInput = document.getElementById('max_salary');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        
+        if (minSalaryInput) {
+            minSalaryInput.value = currentFilters.minSalary !== null ? currentFilters.minSalary : '';
+        }
+        if (maxSalaryInput) {
+            maxSalaryInput.value = currentFilters.maxSalary !== null ? currentFilters.maxSalary : '';
+        }
+        if (startDateInput) {
+            startDateInput.value = currentFilters.startDate;
+        }
+        if (endDateInput) {
+            endDateInput.value = currentFilters.endDate;
+        }
+    }
+    
+    // Вызываем подсветку при загрузке
+    highlightActiveFilters();
+
     // Автоматическая валидация зарплат
     const minSalaryInput = document.getElementById('min_salary');
     const maxSalaryInput = document.getElementById('max_salary');
+    
+    // Автоматическая валидация дат
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
     
     function validateSalaries() {
         if (minSalaryInput.value && maxSalaryInput.value) {
@@ -177,26 +452,116 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
     
+    function validateDates() {
+        if (startDateInput.value && endDateInput.value) {
+            const start = new Date(startDateInput.value);
+            const end = new Date(endDateInput.value);
+            
+            if (start > end) {
+                startDateInput.classList.add('is-invalid');
+                endDateInput.classList.add('is-invalid');
+                return false;
+            } else {
+                startDateInput.classList.remove('is-invalid');
+                endDateInput.classList.remove('is-invalid');
+            }
+        }
+        return true;
+    }
+    
+    // Обработчики изменения полей ввода
     if (minSalaryInput && maxSalaryInput) {
-        minSalaryInput.addEventListener('change', validateSalaries);
-        maxSalaryInput.addEventListener('change', validateSalaries);
+        minSalaryInput.addEventListener('change', function() {
+            currentFilters.minSalary = this.value ? parseInt(this.value) : null;
+            validateSalaries();
+        });
+        maxSalaryInput.addEventListener('change', function() {
+            currentFilters.maxSalary = this.value ? parseInt(this.value) : null;
+            validateSalaries();
+        });
     }
     
-    // Быстрый выбор диапазонов зарплат
-    const quickFilters = document.createElement('div');
-    quickFilters.className = 'mb-2';
-    quickFilters.innerHTML = `
-        <small class="text-muted">Быстрые фильтры: </small>
-        <a href="?min_salary=0&max_salary=50000" class="badge bg-light text-dark text-decoration-none">до 50к</a>
-        <a href="?min_salary=50000&max_salary=100000" class="badge bg-light text-dark text-decoration-none">50-100к</a>
-        <a href="?min_salary=100000&max_salary=200000" class="badge bg-light text-dark text-decoration-none">100-200к</a>
-        <a href="?min_salary=200000" class="badge bg-light text-dark text-decoration-none">от 200к</a>
-    `;
-    
-    const form = document.querySelector('form');
-    if (form) {
-        form.parentNode.insertBefore(quickFilters, form);
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', function() {
+            currentFilters.startDate = this.value;
+            validateDates();
+        });
+        endDateInput.addEventListener('change', function() {
+            currentFilters.endDate = this.value;
+            validateDates();
+        });
     }
+
+ // Обработчик для кнопки сброса
+const resetButton = document.getElementById('reset-filters-btn');
+if (resetButton) {
+    resetButton.addEventListener('click', function(e) {
+        if (currentFilters.minSalary !== null || currentFilters.maxSalary !== null || 
+            currentFilters.startDate || currentFilters.endDate || 
+            currentFilters.search || currentFilters.sortBy !== 'id') {
+            e.preventDefault();
+            // Полный сброс всех фильтров
+            currentFilters = {
+                minSalary: null,
+                maxSalary: null,
+                startDate: '',
+                endDate: '',
+                search: '',
+                sortBy: 'id',
+                sortOrder: 'asc'
+            };
+            updateUrl();
+        }
+    });
+}
+
+    // Добавляем индикатор комбинированных фильтров
+    function updateCombinedFilterIndicator() {
+        const salaryFiltersActive = currentFilters.minSalary !== null || currentFilters.maxSalary !== null;
+        const dateFiltersActive = currentFilters.startDate || currentFilters.endDate;
+        
+        if (salaryFiltersActive && dateFiltersActive) {
+            // Показываем специальный индикатор комбинированной фильтрации
+            const combinedIndicator = document.createElement('div');
+            combinedIndicator.className = 'alert alert-success mt-2';
+            combinedIndicator.innerHTML = `
+                <strong>✓ Комбинированная фильтрация</strong>
+                <small class="d-block">Применены фильтры по зарплате и дате приема</small>
+            `;
+            
+            // Убираем существующий индикатор если есть
+            const existingIndicator = document.querySelector('.combined-filter-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+            
+            combinedIndicator.classList.add('combined-filter-indicator');
+            document.querySelector('.alert-info')?.insertAdjacentElement('afterend', combinedIndicator);
+        } else {
+            // Убираем индикатор если комбинированной фильтрации нет
+            const existingIndicator = document.querySelector('.combined-filter-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+        }
+    }
+
+    // Вызываем обновление индикатора при загрузке
+    updateCombinedFilterIndicator();
+
+    // Добавляем обработчики для Enter в полях ввода
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                currentFilters.search = this.value;
+                updateUrl();
+            }
+        });
+    }
+
+    // Инициализация при загрузке
+    isInitialLoad = false;
 });
 </script>
 {% endblock %}

@@ -23,3 +23,21 @@ timestamp,username,action,ip_address,user_agent,session_duration
 2025-10-14 16:02:21,maxim2,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
 2025-10-14 16:03:31,maxim2,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
 2025-10-14 16:03:35,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 16:37:47,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 16:37:51,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 17:18:21,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 17:18:24,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 17:31:16,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 17:31:24,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 17:32:17,admin,UPDATE_EMPLOYEE,,,Updated employee: 3
+2025-10-14 17:42:58,admin,UPDATE_EMPLOYEE,,,Updated employee: 49987
+2025-10-14 17:43:41,admin,UPDATE_EMPLOYEE,,,Updated employee: 49987
+2025-10-14 18:08:02,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 18:08:04,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 18:10:56,admin,UPDATE_EMPLOYEE,,,Updated employee: 18
+2025-10-14 18:25:22,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 18:25:25,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 18:26:32,admin,UPDATE_EMPLOYEE,,,Updated employee: 49985
+2025-10-14 18:27:10,admin,UPDATE_EMPLOYEE,,,Updated employee: 49985
+2025-10-14 18:27:44,admin,LOGOUT,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",
+2025-10-14 19:19:13,admin,LOGIN,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36",

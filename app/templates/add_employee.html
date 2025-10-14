@@ -8,7 +8,7 @@
             <a href="{{ url_for('main.employees') }}" class="btn btn-secondary">Назад к списку</a>
         </div>
 
-        <form method="POST">
+        <form method="POST" id="employeeForm">
             {{ form.hidden_tag() }}
             
             <div class="mb-3">
@@ -25,7 +25,10 @@
 
             <div class="mb-3">
                 {{ form.position.label(class="form-label") }}
-                {{ form.position(class="form-control") }}
+                {{ form.position(class="form-select", id="positionSelect") }}
+                <div class="form-text">
+                    Выберите должность из списка. Если нужной должности нет в списке, выберите опцию "+ Добавить новую должность"
+                </div>
                 {% if form.position.errors %}
                     <div class="text-danger">
                         {% for error in form.position.errors %}
@@ -33,6 +36,15 @@
                         {% endfor %}
                     </div>
                 {% endif %}
+            </div>
+
+            <!-- Поле для ввода новой должности (скрыто по умолчанию) -->
+            <div class="mb-3" id="customPositionField" style="display: none;">
+                <label for="custom_position" class="form-label">Новая должность</label>
+                <input type="text" class="form-control" id="custom_position" name="custom_position" 
+                       placeholder="Введите название новой должности" maxlength="50">
+                <div class="form-text">Должность будет добавлена в общий список</div>
+                <div id="customPositionError" class="text-danger" style="display: none;"></div>
             </div>
 
             <div class="mb-3">
@@ -71,8 +83,105 @@
                 {% endif %}
             </div>
 
-            <button type="submit" class="btn btn-primary">Добавить сотрудника</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Добавить сотрудника</button>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const positionSelect = document.getElementById('positionSelect');
+    const customPositionField = document.getElementById('customPositionField');
+    const customPositionInput = document.getElementById('custom_position');
+    const customPositionError = document.getElementById('customPositionError');
+    const employeeForm = document.getElementById('employeeForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    console.log('DOM loaded - position select element:', positionSelect);
+    console.log('Current position select value:', positionSelect.value);
+    
+    // Функция для показа/скрытия поля ввода новой должности
+    function toggleCustomPositionField() {
+        console.log('Position select changed to:', positionSelect.value);
+        
+        if (positionSelect.value === '__new__') {
+            customPositionField.style.display = 'block';
+            customPositionInput.setAttribute('required', 'required');
+            console.log('Showing custom position field');
+        } else {
+            customPositionField.style.display = 'none';
+            customPositionInput.removeAttribute('required');
+            customPositionError.style.display = 'none';
+            console.log('Hiding custom position field');
+        }
+    }
+    
+    // Инициализация при загрузке страницы
+    toggleCustomPositionField();
+    
+    // Обработчик изменения выбора должности
+    positionSelect.addEventListener('change', toggleCustomPositionField);
+    
+    // Валидация в реальном времени для поля новой должности
+    customPositionInput.addEventListener('input', function() {
+        if (this.value.trim().length < 2) {
+            customPositionError.textContent = 'Название должности должно содержать минимум 2 символа';
+            customPositionError.style.display = 'block';
+        } else if (this.value.trim().length > 50) {
+            customPositionError.textContent = 'Название должности не должно превышать 50 символов';
+            customPositionError.style.display = 'block';
+        } else {
+            customPositionError.style.display = 'none';
+        }
+    });
+    
+    // Обработчик отправки формы
+    employeeForm.addEventListener('submit', function(e) {
+        console.log('Form submit triggered');
+        console.log('Position select value:', positionSelect.value);
+        console.log('Custom position value:', customPositionInput.value);
+        
+        if (positionSelect.value === '__new__') {
+            const customPositionValue = customPositionInput.value.trim();
+            
+            if (!customPositionValue) {
+                e.preventDefault();
+                customPositionError.textContent = 'Пожалуйста, введите название новой должности';
+                customPositionError.style.display = 'block';
+                customPositionInput.focus();
+                console.log('Form validation failed: custom position is empty');
+                return;
+            }
+            
+            if (customPositionValue.length < 2) {
+                e.preventDefault();
+                customPositionError.textContent = 'Название должности должно содержать минимум 2 символа';
+                customPositionError.style.display = 'block';
+                customPositionInput.focus();
+                console.log('Form validation failed: custom position too short');
+                return;
+            }
+            
+            if (customPositionValue.length > 50) {
+                e.preventDefault();
+                customPositionError.textContent = 'Название должности не должно превышать 50 символов';
+                customPositionError.style.display = 'block';
+                customPositionInput.focus();
+                console.log('Form validation failed: custom position too long');
+                return;
+            }
+            
+            console.log('Form validation passed for custom position');
+        }
+    });
+    
+    // Добавляем индикатор загрузки при отправке формы
+    employeeForm.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Добавление...';
+    });
+});
+</script>
 {% endblock %}

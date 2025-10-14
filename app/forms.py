@@ -31,8 +31,52 @@ class RegistrationForm(FlaskForm):
 
 class EmployeeForm(FlaskForm):
     full_name = StringField('ФИО', validators=[DataRequired(message='Обязательное поле'), Length(max=100)])
-    position = StringField('Должность', validators=[DataRequired(message='Обязательное поле'), Length(max=50)])
+    position = SelectField('Должность', validators=[DataRequired(message='Обязательное поле')], choices=[])
     hire_date = DateField('Дата приема', validators=[DataRequired(message='Обязательное поле')])
     salary = IntegerField('Зарплата', validators=[DataRequired(message='Обязательное поле')])
     boss_id = SelectField('Руководитель', coerce=int, validators=[Optional()])
     submit = SubmitField('Сохранить')
+    
+    def __init__(self, *args, **kwargs):
+        super(EmployeeForm, self).__init__(*args, **kwargs)
+        # Динамически загружаем должности при создании формы
+        self.position.choices = self.get_position_choices()
+    
+    def get_position_choices(self):
+        """Получает список должностей из базы и добавляет опцию для новой должности"""
+        positions = Employee.get_unique_positions()
+        choices = [(pos, pos) for pos in positions]
+        choices.append(('', '-- Выберите должность --'))  # Пустая опция по умолчанию
+        choices.append(('__new__', '+ Добавить новую должность'))  # Опция для добавления новой
+        return choices
+
+class EmployeeFormWithCustomPosition(FlaskForm):
+    """Альтернативная форма с возможностью ввода новой должности"""
+    full_name = StringField('ФИО', validators=[DataRequired(message='Обязательное поле'), Length(max=100)])
+    position_select = SelectField('Выберите должность', validators=[Optional()], choices=[])
+    position_custom = StringField('Или введите новую должность', validators=[Optional(), Length(max=50)])
+    hire_date = DateField('Дата приема', validators=[DataRequired(message='Обязательное поле')])
+    salary = IntegerField('Зарплата', validators=[DataRequired(message='Обязательное поле')])
+    boss_id = SelectField('Руководитель', coerce=int, validators=[Optional()])
+    submit = SubmitField('Сохранить')
+    
+    def __init__(self, *args, **kwargs):
+        super(EmployeeFormWithCustomPosition, self).__init__(*args, **kwargs)
+        # Загружаем существующие должности
+        positions = Employee.get_unique_positions()
+        self.position_select.choices = [('', '-- Выберите из списка --')] + [(pos, pos) for pos in positions]
+    
+    def validate(self, **kwargs):
+        # Кастомная валидация - должна быть выбрана либо существующая должность, либо введена новая
+        if not super().validate(**kwargs):
+            return False
+        
+        if not self.position_select.data and not self.position_custom.data:
+            self.position_select.errors.append('Необходимо выбрать должность из списка или ввести новую')
+            return False
+        
+        if self.position_select.data and self.position_custom.data:
+            self.position_custom.errors.append('Выберите должность из списка ИЛИ введите новую, но не оба варианта')
+            return False
+        
+        return True

@@ -67,6 +67,12 @@ class Employee(db.Model):
             'boss_id': self.boss_id
         }
 
+    @staticmethod
+    def get_unique_positions():
+        """Получает список уникальных должностей из базы"""
+        positions = db.session.query(Employee.position).distinct().all()
+        return [position[0] for position in positions if position[0]]
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

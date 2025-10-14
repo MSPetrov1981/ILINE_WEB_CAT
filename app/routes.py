@@ -139,6 +139,34 @@ def employees():
     min_salary = request.args.get('min_salary', type=int)
     max_salary = request.args.get('max_salary', type=int)
     
+    # Получаем параметры фильтрации по дате приема
+    start_date_str = request.args.get('start_date', '')
+    end_date_str = request.args.get('end_date', '')
+    
+    # Конвертируем строки в даты
+    start_date = None
+    end_date = None
+    
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Неверный формат начальной даты', 'error')
+            start_date_str = ''
+    
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Неверный формат конечной даты', 'error')
+            end_date_str = ''
+    
+    # Валидация: начальная дата не может быть больше конечной
+    if start_date and end_date and start_date > end_date:
+        flash('Начальная дата не может быть больше конечной', 'error')
+        start_date, end_date = end_date, start_date
+        start_date_str, end_date_str = end_date_str, start_date_str
+    
     # Валидация: минимальная зарплата не может быть больше максимальной
     if min_salary and max_salary and min_salary > max_salary:
         flash('Минимальная зарплата не может быть больше максимальной', 'error')
@@ -149,16 +177,24 @@ def employees():
             pagination = search_service.search_employees(
                 search_query, page, 20, 
                 min_salary=min_salary, 
-                max_salary=max_salary
+                max_salary=max_salary,
+                start_date=start_date,
+                end_date=end_date
             )
         else:
             pagination = search_service.get_sorted_employees(
                 sort_by, sort_order, page, 20,
                 min_salary=min_salary,
-                max_salary=max_salary
+                max_salary=max_salary,
+                start_date=start_date,
+                end_date=end_date
             )
         
         employees = pagination.items
+        
+        # Передаем текущую дату для вычислений в шаблоне
+        now = datetime.now()
+        
         return render_template(
             'employees.html',
             employees=employees,
@@ -167,7 +203,10 @@ def employees():
             sort_by=sort_by,
             sort_order=sort_order,
             min_salary=min_salary,
-            max_salary=max_salary
+            max_salary=max_salary,
+            start_date=start_date_str,
+            end_date=end_date_str,
+            now=now
         )
     except Exception as e:
         flash(f'Ошибка загрузки сотрудников: {str(e)}', 'error')
@@ -186,9 +225,18 @@ def add_employee():
         try:
             boss_id = form.boss_id.data if form.boss_id.data != 0 else None
             
+            # Обрабатываем выбор "Добавить новую должность"
+            position = form.position.data
+            if position == '__new__':
+                custom_position = request.form.get('custom_position', '').strip()
+                if not custom_position:
+                    flash('Пожалуйста, введите название новой должности', 'error')
+                    return render_template('add_employee.html', form=form)
+                position = custom_position
+            
             employee_service.create_employee(
                 full_name=form.full_name.data,
-                position=form.position.data,
+                position=position,
                 hire_date=form.hire_date.data,
                 salary=form.salary.data,
                 boss_id=boss_id
@@ -232,10 +280,19 @@ def edit_employee(employee_id):
         try:
             boss_id = form.boss_id.data if form.boss_id.data != 0 else None
             
+            # Обрабатываем выбор "Добавить новую должность"
+            position = form.position.data
+            if position == '__new__':
+                custom_position = request.form.get('custom_position', '').strip()
+                if not custom_position:
+                    flash('Пожалуйста, введите название новой должности', 'error')
+                    return render_template('edit_employee.html', form=form, employee=employee)
+                position = custom_position
+            
             employee_service.update_employee(
                 employee_id,
                 full_name=form.full_name.data,
-                position=form.position.data,
+                position=position,
                 hire_date=form.hire_date.data,
                 salary=form.salary.data,
                 boss_id=boss_id
@@ -253,6 +310,7 @@ def edit_employee(employee_id):
             flash(f'Ошибка обновления сотрудника: {str(e)}', 'error')
     
     return render_template('edit_employee.html', form=form, employee=employee)
+
 
 @main.route('/employee/<int:employee_id>/delete', methods=['POST'])
 @login_required
@@ -302,5 +360,16 @@ def api_search_employees():
             'full_name': emp.full_name,
             'position': emp.position
         } for emp in employees])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+    # Новый маршрут для получения должностей через API
+@main.route('/api/positions')
+@login_required
+def get_positions():
+    """API endpoint для получения списка должностей"""
+    try:
+        positions = Employee.get_unique_positions()
+        return jsonify(positions)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
