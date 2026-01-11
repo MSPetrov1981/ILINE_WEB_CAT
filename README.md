@@ -63,29 +63,30 @@ employee-management-system/
 ├── app/  
 │   ├── __init__.py              # Инициализация Flask приложения  
 │   ├── routes.py                # Маршруты и обработчики запросов  
-│   ├── models.py                # Модели данных (User, Employee, LoginLog)
-│   ├── forms.py                 # Формы (Login, Registration, Employee)
-│   ├── services/                # Бизнес-логика
-│   │   ├── auth_service.py      # Сервис аутентификации
-│   │   ├── employee_service.py  # Сервис сотрудников
-│   │   └── search_service.py    # Сервис поиска и фильтрации
-│   ├── templates/               # HTML шаблоны
-│   │   ├── base.html            # Базовый шаблон
-│   │   ├── index.html           # Главная страница
-│   │   ├── login.html           # Страница входа
-│   │   ├── register.html        # Страница регистрации
-│   │   ├── dashboard.html       # Панель управления
-│   │   ├── employees.html       # Список сотрудников
-│   │   ├── add_employee.html    # Добавление сотрудника
-│   │   ├── edit_employee.html   # Редактирование сотрудника
-│   │   └── user_logs.html       # Логи пользователя
-│   └── static/
-│       └── css/
-│           └── style.css        # Стили приложения
-├── config.py                    # Конфигурация приложения
-├── requirements.txt             # Зависимости Python
-├── run.py                       # Точка входа приложения
-└── README.md                    # Документация
+│   ├── models.py                # Модели данных (User, Employee, LoginLog)  
+│   ├── forms.py                 # Формы (Login, Registration, Employee)  
+│   ├── services/                # Бизнес-логика  
+│   │   ├── auth_service.py      # Сервис аутентификации  
+│   │   ├── employee_service.py  # Сервис сотрудников  
+│   │   └── search_service.py    # Сервис поиска и фильтрации  
+│   ├── templates/               # HTML шаблоны  
+│   │   ├── base.html            # Базовый шаблон  
+│   │   ├── index.html           # Главная страница  
+│   │   ├── login.html           # Страница входа  
+│   │   ├── register.html        # Страница регистрации  
+│   │   ├── dashboard.html       # Панель управления  
+│   │   ├── employees.html       # Список сотрудников  
+│   │   ├── add_employee.html    # Добавление сотрудника  
+│   │   ├── edit_employee.html   # Редактирование сотрудника  
+│   │   └── user_logs.html       # Логи пользователя  
+│   └── static/  
+│       └── css/  
+│           └── style.css        # Стили приложения  
+├── config.py                    # Конфигурация приложения  
+├── requirements.txt             # Зависимости Python  
+├── run.py                       # Точка входа приложения  
+└── README.md                    # Документация  
+
 
 скачайте проект в локальную папку
 ### 1. Создание виртуального окружения напрмере VSCode:
@@ -100,29 +101,31 @@ python -m venv venv
 Выберите интерпретатор из созданного виртуального окружения
 
 Используемые библиотеки
-bcrypt==5.0.0
-blinker==1.9.0
-click==8.3.0
-colorama==0.4.6
-dnspython==2.8.0
-dotenv==0.9.9
-email-validator==2.3.0
-Flask==3.1.2
-Flask-Bcrypt==1.0.1
-Flask-Login==0.6.3
-Flask-SQLAlchemy==3.1.1
-Flask-WTF==1.2.2
-greenlet==3.2.4
-idna==3.11
-itsdangerous==2.2.0
-Jinja2==3.1.6
-MarkupSafe==3.0.3
-psycopg2-binary==2.9.11
-python-dotenv==1.1.1
-SQLAlchemy==2.0.44
-typing_extensions==4.15.0
-Werkzeug==3.1.3
-WTForms==3.2.1
+bcrypt==5.0.0  
+blinker==1.9.0  
+click==8.3.0  
+colorama==0.4.6  
+dnspython==2.8.0  
+dotenv==0.9.9  
+email-validator==2.3.0  
+Flask==3.1.2  
+Flask-Bcrypt==1.0.1  
+Flask-Login==0.6.3  
+Flask-SQLAlchemy==3.1.1  
+Flask-WTF==1.2.2  
+greenlet==3.2.4  
+idna==3.11  
+itsdangerous==2.2.0  
+Jinja2==3.1.6  
+MarkupSafe==3.0.3  
+psycopg2-binary==2.9.11  
+python-dotenv==1.1.1  
+ruff==0.14.11  
+SQLAlchemy==2.0.44  
+typing_extensions==4.15.0  
+Werkzeug==3.1.3  
+WTForms==3.2.1  
+
 
 2. Установка зависимостей
 Убедитесь, что виртуальное окружение активировано, и выполните:
