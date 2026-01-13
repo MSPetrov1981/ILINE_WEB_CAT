@@ -1,0 +1,1068 @@
+<!-- analytics.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Аналитика персонала</h1>
+        <div>
+            <a href="{{ url_for('main.employees') }}" class="btn btn-secondary">Назад к списку</a>
+            <button class="btn btn-info ms-2" id="debugBtn">Отладка API</button>
+        </div>
+    </div>
+
+    <!-- Статус загрузки -->
+    <div class="alert alert-info d-none" id="loadingStatus">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            <span id="statusText">Загрузка данных...</span>
+        </div>
+    </div>
+
+    <!-- Сообщения об ошибках -->
+    <div class="alert alert-danger d-none" id="errorAlert">
+        <strong>Ошибка!</strong> <span id="errorMessage"></span>
+    </div>
+
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Сводная статистика</h5>
+                    <button class="btn btn-sm btn-outline-primary" id="refreshStats">
+                        <i class="bi bi-arrow-clockwise"></i> Обновить
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="summaryStats">
+                        <div class="col text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Загрузка...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель управления графиками -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Настройки графика</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-success" id="savePreset">Сохранить пресет</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="chartConfigForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Тип графика</label>
+                                <select class="form-select" id="chartType" required>
+                                    <option value="">Загрузка...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">Ось X</label>
+                                <select class="form-select" id="xAxis" required>
+                                    <option value="">Загрузка...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">Ось Y / Агрегация</label>
+                                <select class="form-select" id="yAxis" required>
+                                    <option value="">Загрузка...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">Группировка</label>
+                                <select class="form-select" id="groupBy">
+                                    <option value="none">Загрузка...</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Фильтры -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Минимальная зарплата</label>
+                                <input type="number" class="form-control" id="minSalary" placeholder="0" min="0">
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">Максимальная зарплата</label>
+                                <input type="number" class="form-control" id="maxSalary" placeholder="1000000" min="0">
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">Дата с</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">Дата по</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary" id="buildChartBtn" disabled>
+                                    <span class="spinner-border spinner-border-sm d-none" id="loadingSpinner" role="status"></span>
+                                    Загрузка конфигурации...
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="resetBtn">Сбросить</button>
+                                <button type="button" class="btn btn-outline-info" id="loadExampleBtn">Пример</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- График -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>График</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary" id="downloadChart" disabled>
+                            <i class="bi bi-download"></i> Скачать
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" id="fullscreenChart">
+                            <i class="bi bi-arrows-fullscreen"></i> Полный экран
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="noChartMessage" class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-bar-chart-line" style="font-size: 3rem; color: #6c757d;"></i>
+                        </div>
+                        <h5>График не построен</h5>
+                        <p class="text-muted">Выберите параметры и нажмите "Построить график"</p>
+                    </div>
+                    <div class="chart-container d-none" style="position: relative; height: 400px;">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые отчеты -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Быстрые отчеты</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="quickReports">
+                        <!-- Быстрые отчеты будут загружены через AJAX -->
+                        <div class="col text-center py-4">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Загрузка...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отладка API (скрыто по умолчанию) -->
+    <div class="row mb-4 d-none" id="debugSection">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Отладка API</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="testAPI('/api/analytics/columns')">
+                            Тест /api/analytics/columns
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="testAPI('/api/analytics/summary')">
+                            Тест /api/analytics/summary
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="testChartAPI()">
+                            Тест построения графика
+                        </button>
+                    </div>
+                    <div>
+                        <label class="form-label">Ответ API:</label>
+                        <pre id="apiResponse" class="bg-light p-3 rounded" style="max-height: 300px; overflow: auto;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для сохранения пресета -->
+<div class="modal fade" id="savePresetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Сохранить пресет</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="presetForm">
+                    <div class="mb-3">
+                        <label class="form-label">Название пресета</label>
+                        <input type="text" class="form-control" id="presetName" required placeholder="Например: Статистика по должностям">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание (необязательно)</label>
+                        <textarea class="form-control" id="presetDescription" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="savePresetConfirm">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Подключаем Chart.js и иконки Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<script>
+// Глобальные переменные
+let chart = null;
+let chartConfig = {};
+let analyticsData = {};
+let columnInfo = null;
+
+// DOM элементы
+const elements = {
+    loadingStatus: document.getElementById('loadingStatus'),
+    statusText: document.getElementById('statusText'),
+    errorAlert: document.getElementById('errorAlert'),
+    errorMessage: document.getElementById('errorMessage'),
+    summaryStats: document.getElementById('summaryStats'),
+    chartType: document.getElementById('chartType'),
+    xAxis: document.getElementById('xAxis'),
+    yAxis: document.getElementById('yAxis'),
+    groupBy: document.getElementById('groupBy'),
+    chartForm: document.getElementById('chartConfigForm'),
+    buildChartBtn: document.getElementById('buildChartBtn'),
+    loadingSpinner: document.getElementById('loadingSpinner'),
+    resetBtn: document.getElementById('resetBtn'),
+    downloadBtn: document.getElementById('downloadChart'),
+    fullscreenBtn: document.getElementById('fullscreenChart'),
+    noChartMessage: document.getElementById('noChartMessage'),
+    chartContainer: document.querySelector('.chart-container'),
+    quickReports: document.getElementById('quickReports'),
+    debugSection: document.getElementById('debugSection'),
+    debugBtn: document.getElementById('debugBtn'),
+    refreshStats: document.getElementById('refreshStats'),
+    loadExampleBtn: document.getElementById('loadExampleBtn'),
+    savePresetBtn: document.getElementById('savePreset'),
+    savePresetConfirm: document.getElementById('savePresetConfirm'),
+    // Добавляем элементы фильтров
+    minSalary: document.getElementById('minSalary'),
+    maxSalary: document.getElementById('maxSalary'),
+    startDate: document.getElementById('startDate'),
+    endDate: document.getElementById('endDate'),
+    // Добавляем элемент для API ответов
+    apiResponse: document.getElementById('apiResponse')
+};
+
+// Проверяем, что все основные элементы существуют
+console.log('Проверка DOM элементов:');
+Object.keys(elements).forEach(key => {
+    if (!elements[key] && key !== 'savePresetModal') {
+        console.warn(`Элемент ${key} не найден в DOM`);
+    }
+});
+
+// Утилиты
+const utils = {
+    showLoading(message = 'Загрузка...') {
+        elements.statusText.textContent = message;
+        elements.loadingStatus.classList.remove('d-none');
+    },
+
+    hideLoading() {
+        elements.loadingStatus.classList.add('d-none');
+    },
+
+    showError(message) {
+        elements.errorMessage.textContent = message;
+        elements.errorAlert.classList.remove('d-none');
+        console.error(message);
+    },
+
+    hideError() {
+        elements.errorAlert.classList.add('d-none');
+    },
+
+    updateButtonState(enabled, text = null) {
+        elements.buildChartBtn.disabled = !enabled;
+        if (text) {
+            const btnText = elements.buildChartBtn.querySelector('.btn-text') || 
+                           (() => {
+                               const span = document.createElement('span');
+                               span.className = 'btn-text';
+                               elements.buildChartBtn.appendChild(span);
+                               return span;
+                           })();
+            btnText.textContent = text;
+        }
+    },
+
+    formatNumber(num) {
+        return new Intl.NumberFormat('ru-RU').format(num);
+    }
+};
+
+// API функции
+const api = {
+    async fetchData(url, options = {}) {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            utils.showError(`Ошибка при запросе к ${url}: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async getColumnsInfo() {
+        utils.showLoading('Загрузка конфигурации графиков...');
+        try {
+            const data = await this.fetchData('/api/analytics/columns');
+            columnInfo = data;
+            return data;
+        } finally {
+            utils.hideLoading();
+        }
+    },
+
+    async getSummaryStats() {
+        try {
+            const data = await this.fetchData('/api/analytics/summary');
+            return data;
+        } catch (error) {
+            return {
+                total_employees: 0,
+                avg_salary: 0,
+                max_salary: 0,
+                min_salary: 0,
+                error: error.message
+            };
+        }
+    },
+
+    async getChartData(chartData) {
+        utils.showLoading('Построение графика...');
+        elements.loadingSpinner.classList.remove('d-none');
+        
+        try {
+            const data = await this.fetchData('/api/analytics/data', {
+                method: 'POST',
+                body: JSON.stringify(chartData)
+            });
+            return data;
+        } finally {
+            utils.hideLoading();
+            elements.loadingSpinner.classList.add('d-none');
+        }
+    }
+};
+
+// Функции для работы с UI
+const ui = {
+    populateDropdowns() {
+         if (!columnInfo) {
+            console.error('columnInfo не загружен');
+            return;
+        }
+
+        // Типы графиков
+        if (elements.chartType) {
+            elements.chartType.innerHTML = '<option value="">Выберите тип графика</option>';
+            if (columnInfo.chart_types && Array.isArray(columnInfo.chart_types)) {
+                columnInfo.chart_types.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.name;
+                    option.textContent = type.label;
+                    elements.chartType.appendChild(option);
+                });
+            }
+        }elements.chartType.innerHTML = '<option value="">Выберите тип графика</option>';
+        if (columnInfo.chart_types && Array.isArray(columnInfo.chart_types)) {
+            columnInfo.chart_types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type.name;
+                option.textContent = type.label;
+                elements.chartType.appendChild(option);
+            });
+        }
+
+        // Ось X
+        elements.xAxis.innerHTML = '<option value="">Выберите ось X</option>';
+        if (columnInfo.columns && Array.isArray(columnInfo.columns)) {
+            columnInfo.columns.forEach(column => {
+                const option = document.createElement('option');
+                option.value = column.name;
+                option.textContent = column.label;
+                option.dataset.type = column.type;
+                elements.xAxis.appendChild(option);
+            });
+        }
+
+        // Ось Y
+        elements.yAxis.innerHTML = '<option value="">Выберите ось Y</option>';
+        // Добавляем числовые колонки
+        if (columnInfo.columns && Array.isArray(columnInfo.columns)) {
+            columnInfo.columns.forEach(column => {
+                if (column.type === 'numeric') {
+                    const option = document.createElement('option');
+                    option.value = column.name;
+                    option.textContent = column.label;
+                    elements.yAxis.appendChild(option);
+                }
+            });
+        }
+        // Добавляем агрегации
+        if (columnInfo.aggregations && Array.isArray(columnInfo.aggregations)) {
+            columnInfo.aggregations.forEach(agg => {
+                const option = document.createElement('option');
+                option.value = agg.name;
+                option.textContent = agg.label;
+                elements.yAxis.appendChild(option);
+            });
+        }
+
+        // Группировка
+        elements.groupBy.innerHTML = '<option value="none">Без группировки</option>';
+        if (columnInfo.group_options && Array.isArray(columnInfo.group_options)) {
+            columnInfo.group_options.forEach(opt => {
+                if (opt.name !== 'none') {
+                    const option = document.createElement('option');
+                    option.value = opt.name;
+                    option.textContent = opt.label;
+                    elements.groupBy.appendChild(option);
+                }
+            });
+        }
+    },
+
+    updateSummaryStats(stats) {
+        if (stats.error) {
+            elements.summaryStats.innerHTML = `
+                <div class="col-md-12 text-center text-danger">
+                    <h5>Ошибка загрузки статистики</h5>
+                    <p>${stats.error}</p>
+                </div>
+            `;
+            return;
+        }
+
+        elements.summaryStats.innerHTML = `
+            <div class="col-md-3">
+                <div class="text-center p-3 bg-light rounded">
+                    <h3 class="text-primary">${utils.formatNumber(stats.total_employees)}</h3>
+                    <p class="text-muted mb-0">Всего сотрудников</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center p-3 bg-light rounded">
+                    <h3 class="text-success">${utils.formatNumber(Math.round(stats.avg_salary))} ₽</h3>
+                    <p class="text-muted mb-0">Средняя зарплата</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center p-3 bg-light rounded">
+                    <h3 class="text-warning">${utils.formatNumber(stats.max_salary)} ₽</h3>
+                    <p class="text-muted mb-0">Максимальная зарплата</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center p-3 bg-light rounded">
+                    <h3 class="text-info">${utils.formatNumber(stats.min_salary)} ₽</h3>
+                    <p class="text-muted mb-0">Минимальная зарплата</p>
+                </div>
+            </div>
+        `;
+    },
+
+    createQuickReports() {
+        if (!columnInfo) return;
+
+        const reports = [
+            {
+                title: 'Распределение по должностям',
+                description: 'Количество сотрудников по каждой должности',
+                chartType: 'pie',
+                xAxis: 'position',
+                yAxis: 'count',
+                icon: 'bi-pie-chart'
+            },
+            {
+                title: 'Средняя зарплата по должностям',
+                description: 'Сравнение средней зарплаты по разным должностям',
+                chartType: 'bar',
+                xAxis: 'position',
+                yAxis: 'avg',
+                aggregation: 'salary',
+                icon: 'bi-bar-chart'
+            },
+            {
+                title: 'Динамика приема на работу',
+                description: 'Количество новых сотрудников по годам',
+                chartType: 'line',
+                xAxis: 'hire_date',
+                yAxis: 'count',
+                groupBy: 'year',
+                icon: 'bi-graph-up'
+            }
+        ];
+
+        elements.quickReports.innerHTML = '';
+        
+        reports.forEach(report => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-3';
+            
+            col.innerHTML = `
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <i class="bi ${report.icon} fs-3 text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="card-title">${report.title}</h6>
+                                <p class="card-text small text-muted">${report.description}</p>
+                                <button class="btn btn-sm btn-outline-primary quick-report-btn"
+                                        data-chart-type="${report.chartType}"
+                                        data-x-axis="${report.xAxis}"
+                                        data-y-axis="${report.yAxis}"
+                                        ${report.groupBy ? `data-group-by="${report.groupBy}"` : ''}
+                                        ${report.aggregation ? `data-aggregation="${report.aggregation}"` : ''}>
+                                    <i class="bi bi-play-circle me-1"></i> Построить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            elements.quickReports.appendChild(col);
+        });
+
+        // Добавляем обработчики для кнопок быстрых отчетов
+        document.querySelectorAll('.quick-report-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const button = e.currentTarget;
+                chartBuilder.loadQuickReport({
+                    chartType: button.dataset.chartType,
+                    xAxis: button.dataset.xAxis,
+                    yAxis: button.dataset.yAxis,
+                    groupBy: button.dataset.groupBy || 'none',
+                    aggregation: button.dataset.aggregation
+                });
+            });
+        });
+    }
+};
+
+// Функции для работы с графиками
+const chartBuilder = {
+    isBuilding: false,
+    async buildChart() {
+    // Защита от множественных вызовов
+    if (this.isBuilding) {
+        console.log('Уже строим график, пропускаем...');
+        return;
+    }
+    
+    this.isBuilding = true;
+    elements.buildChartBtn.disabled = true;
+    
+    try {
+        const chartType = elements.chartType.value;
+        const xAxis = elements.xAxis.value;
+        const yAxis = elements.yAxis.value;
+        const groupBy = elements.groupBy.value;
+
+        if (!chartType || !xAxis || !yAxis) {
+            utils.showError('Пожалуйста, выберите тип графика и оси');
+            return;
+        }
+
+        // Собираем фильтры
+        const filters = {
+            min_salary: elements.minSalary.value || undefined,
+            max_salary: elements.maxSalary.value || undefined,
+            start_date: elements.startDate.value || undefined,
+            end_date: elements.endDate.value || undefined
+        };
+
+        const chartData = {
+            chart_type: chartType,
+            x_axis: xAxis,
+            y_axis: yAxis,
+            group_by: groupBy !== 'none' ? groupBy : undefined,
+            filters: Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== undefined))
+        };
+
+        console.log('Отправка данных:', chartData);
+        
+        const data = await api.getChartData(chartData);
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        this.renderChart(chartType, xAxis, yAxis, groupBy, data);
+        analyticsData = data;
+        
+    } catch (error) {
+        console.error('Ошибка при построении графика:', error);
+        utils.showError(`Ошибка при построении графика: ${error.message}`);
+        
+        // При ошибке тоже очищаем график
+        if (chart) {
+            chart.destroy();
+            chart = null;
+        }
+        elements.noChartMessage.classList.remove('d-none');
+        elements.chartContainer.classList.add('d-none');
+    } finally {
+        this.isBuilding = false;
+        elements.buildChartBtn.disabled = false;
+    }
+},
+
+    renderChart(chartType, xAxis, yAxis, groupBy, data) {
+    // Уничтожаем старый график если он существует
+    if (chart) {
+        chart.destroy();
+        chart = null;
+    }
+    
+    // Также используем Chart.js метод для проверки существующих графиков
+    const canvas = document.getElementById('analyticsChart');
+    if (canvas) {
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+    }
+
+    // Показываем контейнер с графиком
+    elements.noChartMessage.classList.add('d-none');
+    elements.chartContainer.classList.remove('d-none');
+    elements.downloadBtn.disabled = false;
+
+    // Создаем контекст для графика
+    const ctx = document.getElementById('analyticsChart').getContext('2d');
+
+    // Конфигурация графика
+    chartConfig = {
+        type: chartType,
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: this.getChartTitle(chartType, xAxis, yAxis, groupBy)
+                }
+            }
+        }
+    };
+
+    // Создаем график
+    try {
+        chart = new Chart(ctx, chartConfig);
+    } catch (error) {
+        console.error('Ошибка создания графика:', error);
+        utils.showError('Ошибка отображения графика: ' + error.message);
+        
+        // Показываем сообщение об ошибке
+        elements.noChartMessage.classList.remove('d-none');
+        elements.chartContainer.classList.add('d-none');
+    }
+},
+
+    getChartTitle(chartType, xAxis, yAxis, groupBy) {
+        const chartNames = {
+            'bar': 'Столбчатая диаграмма',
+            'line': 'Линейный график',
+            'pie': 'Круговая диаграмма',
+            'scatter': 'Точечная диаграмма',
+            'histogram': 'Гистограмма'
+        };
+
+        const axisNames = {
+            'position': 'должность',
+            'salary': 'зарплата',
+            'hire_date': 'дате приема',
+            'full_name': 'ФИО',
+            'count': 'количество',
+            'sum': 'сумма',
+            'avg': 'среднее значение',
+            'min': 'минимум',
+            'max': 'максимум'
+        };
+
+        const groupNames = {
+            'year': 'по годам',
+            'month': 'по месяцам',
+            'quarter': 'по кварталам'
+        };
+
+        let title = `${chartNames[chartType] || chartType}: `;
+        title += `${axisNames[yAxis] || yAxis} по ${axisNames[xAxis] || xAxis}`;
+        
+        if (groupBy && groupBy !== 'none' && groupNames[groupBy]) {
+            title += ` (${groupNames[groupBy]})`;
+        }
+
+        return title;
+    },
+
+    getTooltipCallbacks(yAxis) {
+        if (yAxis === 'salary' || yAxis.includes('salary')) {
+            return {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    label += utils.formatNumber(context.raw) + ' ₽';
+                    return label;
+                }
+            };
+        }
+        return {};
+    },
+
+    getChartScales(chartType, yAxis) {
+        if (chartType === 'bar' || chartType === 'line') {
+            return {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            if (yAxis === 'salary' || yAxis.includes('salary')) {
+                                return utils.formatNumber(value) + ' ₽';
+                            }
+                            return utils.formatNumber(value);
+                        }
+                    }
+                }
+            };
+        }
+        return {};
+    },
+
+    loadQuickReport(config) {
+        // Устанавливаем значения в выпадающие списки
+        elements.chartType.value = config.chartType;
+        elements.xAxis.value = config.xAxis;
+        
+        if (config.aggregation) {
+            elements.yAxis.value = config.aggregation;
+        } else {
+            elements.yAxis.value = config.yAxis;
+        }
+        
+        elements.groupBy.value = config.groupBy || 'none';
+
+        // Строим график
+        this.buildChart();
+    },
+
+    loadExample() {
+        // Устанавливаем значения для примера
+        elements.chartType.value = 'bar';
+        elements.xAxis.value = 'position';
+        elements.yAxis.value = 'count';
+        elements.groupBy.value = 'none';
+        
+        // Строим график
+        this.buildChart();
+    }
+};
+
+// Функции для работы с пресетами
+const presets = {
+    saveCurrentPreset() {
+        const preset = {
+            name: document.getElementById('presetName').value.trim(),
+            description: document.getElementById('presetDescription').value.trim(),
+            config: {
+                chartType: elements.chartType.value,
+                xAxis: elements.xAxis.value,
+                yAxis: elements.yAxis.value,
+                groupBy: elements.groupBy.value,
+                filters: {
+                    minSalary: elements.minSalary.value,
+                    maxSalary: elements.maxSalary.value,
+                    startDate: elements.startDate.value,
+                    endDate: elements.endDate.value
+                }
+            },
+            timestamp: new Date().toISOString()
+        };
+
+        if (!preset.name) {
+            alert('Пожалуйста, введите название пресета');
+            return;
+        }
+
+        // Сохраняем в localStorage
+        const savedPresets = JSON.parse(localStorage.getItem('chartPresets') || '[]');
+        savedPresets.push(preset);
+        localStorage.setItem('chartPresets', JSON.stringify(savedPresets));
+
+        alert('Пресет сохранен!');
+        elements.savePresetModal.hide();
+    },
+
+    loadPresets() {
+        // Можно реализовать загрузку пресетов из localStorage
+        const savedPresets = JSON.parse(localStorage.getItem('chartPresets') || '[]');
+        return savedPresets;
+    }
+};
+
+// Отладочные функции
+const debug = {
+    testAPI(url) {
+        utils.showLoading(`Тестирование ${url}...`);
+        
+        fetch(url)
+            .then(response => {
+                const status = `Статус: ${response.status} ${response.statusText}`;
+                return response.json().then(data => ({ status, data }));
+            })
+            .then(({ status, data }) => {
+                document.getElementById('apiResponse').textContent = 
+                    `${status}\n\n${JSON.stringify(data, null, 2)}`;
+                utils.hideLoading();
+            })
+            .catch(error => {
+                document.getElementById('apiResponse').textContent = 
+                    `Ошибка: ${error.message}`;
+                utils.hideLoading();
+            });
+    },
+
+    testChartAPI() {
+        const testData = {
+            chart_type: 'bar',
+            x_axis: 'position',
+            y_axis: 'count',
+            group_by: 'none',
+            filters: {}
+        };
+
+        utils.showLoading('Тестирование построения графика...');
+        
+        fetch('/api/analytics/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(testData)
+        })
+        .then(response => {
+            const status = `Статус: ${response.status} ${response.statusText}`;
+            return response.json().then(data => ({ status, data }));
+        })
+        .then(({ status, data }) => {
+            document.getElementById('apiResponse').textContent = 
+                `${status}\n\n${JSON.stringify(data, null, 2)}`;
+            utils.hideLoading();
+        })
+        .catch(error => {
+            document.getElementById('apiResponse').textContent = 
+                `Ошибка: ${error.message}`;
+            utils.hideLoading();
+        });
+    }
+};
+
+// Инициализация
+async function init() {
+    try {
+        console.log('Запуск аналитики на AJAX...');
+        
+        // Проверяем, что необходимые элементы существуют
+        if (!elements.chartType || !elements.xAxis || !elements.yAxis) {
+            throw new Error('Не найдены необходимые DOM элементы для построения графиков');
+        }
+
+
+        // Загружаем информацию о колонках
+        await api.getColumnsInfo();
+        
+        // Заполняем выпадающие списки
+        ui.populateDropdowns();
+        
+        // Загружаем статистику
+        const stats = await api.getSummaryStats();
+        ui.updateSummaryStats(stats);
+        
+        // Создаем быстрые отчеты
+        ui.createQuickReports();
+        
+        // Обновляем состояние кнопки
+        utils.updateButtonState(true, 'Построить график');
+        
+        // Устанавливаем текущую дату в фильтры
+        const today = new Date().toISOString().split('T')[0];
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const oneYearAgoStr = oneYearAgo.toISOString().split('T')[0];
+        
+        elements.endDate.value = today;
+        elements.startDate.value = oneYearAgoStr;
+        
+        console.log('Аналитика инициализирована успешно');
+        
+    } catch (error) {
+        utils.showError(`Ошибка инициализации: ${error.message}`);
+        utils.updateButtonState(false, 'Ошибка загрузки');
+        if (elements.chartType) {
+            elements.chartType.innerHTML = '<option value="">Ошибка загрузки</option>';
+        }
+
+    }
+}
+
+// Обработчики событий
+function setupEventListeners() {
+    // Построение графика
+    elements.chartForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        chartBuilder.buildChart();
+    });
+
+    // Сброс формы
+    elements.resetBtn.addEventListener('click', () => {
+    elements.chartForm.reset();
+    elements.groupBy.value = 'none';
+    
+    // Уничтожаем график если он существует
+    if (chart) {
+        chart.destroy();
+        chart = null;
+    }
+    
+    // Также проверяем через Chart.js
+    const canvas = document.getElementById('analyticsChart');
+    if (canvas) {
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+    }
+    
+    elements.noChartMessage.classList.remove('d-none');
+    elements.chartContainer.classList.add('d-none');
+    elements.downloadBtn.disabled = true;
+});
+
+    // Скачивание графика
+    elements.downloadBtn.addEventListener('click', () => {
+        if (!chart) {
+            utils.showError('Сначала постройте график');
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.download = `график_${new Date().toLocaleDateString('ru-RU').replace(/\./g, '-')}.png`;
+        link.href = chart.toBase64Image();
+        link.click();
+    });
+
+    // Полноэкранный режим
+    elements.fullscreenBtn.addEventListener('click', () => {
+        const container = elements.chartContainer;
+        
+        if (!document.fullscreenElement) {
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    });
+
+    // Обновление статистики
+    elements.refreshStats.addEventListener('click', async () => {
+        const stats = await api.getSummaryStats();
+        ui.updateSummaryStats(stats);
+    });
+
+    // Загрузка примера
+    elements.loadExampleBtn.addEventListener('click', () => {
+        chartBuilder.loadExample();
+    });
+
+    // Отладка
+    elements.debugBtn.addEventListener('click', () => {
+        elements.debugSection.classList.toggle('d-none');
+    });
+
+    // Сохранение пресета
+    elements.savePresetBtn.addEventListener('click', () => {
+        elements.savePresetModal.show();
+    });
+
+    elements.savePresetConfirm.addEventListener('click', () => {
+        presets.saveCurrentPreset();
+    });
+
+    // Глобальные отладочные функции
+    window.testAPI = debug.testAPI;
+    window.testChartAPI = debug.testChartAPI;
+}
+
+// Запуск приложения
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Запуск аналитики на AJAX...');
+    setupEventListeners();
+    init();
+});
+</script>
+{% endblock %}

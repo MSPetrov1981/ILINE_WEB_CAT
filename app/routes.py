@@ -8,6 +8,7 @@ from app.services.search_service import SearchService
 from app import db
 from datetime import datetime
 import sqlalchemy.exc as sql_exc
+from app.services.analytics_service import AnalyticsService
 
 main = Blueprint('main', __name__)
 
@@ -373,3 +374,81 @@ def get_positions():
         return jsonify(positions)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+@main.route('/analytics')
+@login_required
+def analytics():
+    """Страница аналитики"""
+    # Получаем доступные столбцы для анализа
+    
+    column_info = AnalyticsService.get_available_columns()
+    
+    return render_template(
+        'analytics.html')
+    #    column_info=column_info
+    
+
+@main.route('/api/analytics/data', methods=['POST'])
+@login_required
+def get_analytics_data():
+    """API для получения данных для графиков"""
+    try:
+        data = request.json
+        print(f"Получен запрос на построение графика: {data}")
+        
+        if not data:
+            return jsonify({'error': 'Нет данных'}), 400
+            
+        chart_type = data.get('chart_type', 'bar')
+        x_axis = data.get('x_axis')
+        y_axis = data.get('y_axis')
+        group_by = data.get('group_by')
+        filters = data.get('filters', {})
+        
+        if not x_axis or not y_axis:
+            return jsonify({'error': 'Необходимо указать оси X и Y'}), 400
+        
+        # Получаем данные через сервис
+        result = AnalyticsService.get_chart_data(
+            chart_type=chart_type,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            group_by=group_by,
+            filters=filters
+        )
+        
+        print(f"Результат для графика: {result}")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Ошибка в get_analytics_data: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@main.route('/api/analytics/columns')
+@login_required
+def get_analytics_columns():
+    """API для получения информации о столбцах"""
+    try:
+        column_info = AnalyticsService.get_available_columns()
+        return jsonify(column_info)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@main.route('/api/analytics/summary')
+@login_required
+def get_analytics_summary():
+    """API для получения статистики"""
+    try:
+        summary = AnalyticsService.get_summary_statistics()
+        return jsonify(summary)
+    except Exception as e:
+        print(f"Error in get_analytics_summary: {e}")
+        return jsonify({
+            'total_employees': 0,
+            'avg_salary': 0,
+            'max_salary': 0,
+            'min_salary': 0
+        })

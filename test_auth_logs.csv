@@ -1,0 +1,13 @@
+timestamp,username,action,ip_address,user_agent,session_duration
+2026-01-12 20:34:37,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 21:01:25,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 21:02:04,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 21:22:32,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 21:28:32,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 22:18:49,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 22:21:00,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 22:32:48,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 22:37:30,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-12 22:53:43,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-13 09:35:02,testuser,LOGIN,127.0.0.1,Test Agent,
+2026-01-13 09:44:26,testuser,LOGIN,127.0.0.1,Test Agent,
